@@ -2,17 +2,50 @@
 
 #include <lua.h>
 #include <lauxlib.h>
-//for luajit fix by D.K. 2020年04月09日21:02:59 begin 
-#ifndef LUAMOD_API
-#define LUAMOD_API	LUALIB_API
-#endif
-//for luajit fix by D.K. 2020年04月09日21:02:59 end 
+
 #include <time.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
 
+//for luajit fix by D.K. 20200409 begin 
+
+#ifndef LUAMOD_API
+#define LUAMOD_API	LUALIB_API
+#endif
+
+#ifdef _MSC_VER
+# define inline __inline
+# ifndef _MSC_STDINT_H_
+#  if (_MSC_VER < 1300)
+typedef signed char       int8_t;
+typedef signed short      int16_t;
+typedef signed int        int32_t;
+typedef unsigned char     uint8_t;
+typedef unsigned short    uint16_t;
+typedef unsigned int      uint32_t;
+#  else
+typedef signed __int8     int8_t;
+typedef signed __int16    int16_t;
+typedef signed __int32    int32_t;
+typedef unsigned __int8   uint8_t;
+typedef unsigned __int16  uint16_t;
+typedef unsigned __int32  uint32_t;
+#  endif
+typedef signed __int64       int64_t;
+typedef unsigned __int64     uint64_t;
+# endif
+
+#define srandom srand
+#define random rand
+
+#else
+
+#include <stdint.h>
+
+#endif
+
+//for luajit fix by D.K. 20200409 end 
 #define SMALL_CHUNK 256
 
 /* the eight DES S-boxes */
@@ -944,14 +977,14 @@ lxor_str(lua_State *L) {
 		return luaL_error(L, "Can't xor empty string");
 	}
 	luaL_Buffer b;
-	//for luajit fix by D.K. 2020年04月09日21:02:59 begin 
+	//for luajit fix by D.K. 20200409 begin 
 	luaL_buffinit(L,&b);
 	
 	int i;
 	for (i = 0; i<len1; i++) {
 		luaL_putchar( &b,s1[i] ^ s2[i % len2]);
 	}
-	//for luajit fix by D.K. 2020年04月09日21:02:59 end 
+	//for luajit fix by D.K. 20200409 end 
 	luaL_pushresult(&b);
 	return 1;
 }
@@ -963,11 +996,11 @@ int lhmac_sha1(lua_State *L);
 
 LUAMOD_API int
 luaopen_skynet_crypt(lua_State *L) {
-//for luajit fix by D.K. 2020年04月09日21:02:59 begin 
+//for luajit fix by D.K. 20200409 begin 
 #ifdef luaL_checkversion
 	luaL_checkversion(L);
 #endif
-//for luajit fix by D.K. 2020年04月09日21:02:59 end 
+//for luajit fix by D.K. 20200409 end 
 	static int init = 0;
 	if (!init) {
 		// Don't need call srandom more than once.

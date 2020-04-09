@@ -44,7 +44,7 @@ LUALIB_API void luaL_setfuncs (lua_State *L, const luaL_Reg *l, int nup) {
   lua_createtable(L, 0, sizeof(l)/sizeof((l)[0]) - 1)
 
 #define luaL_newlib(L,l)  (luaL_newlibtable(L,l), luaL_setfuncs(L,l,0))
-
+//for luajit fix by D.K. 20200409 begin 
 #if LUA_VERSION_NUM < 502
 static int64_t lua_tointegerx(lua_State *L, int idx, int *isnum) {
 	if (lua_isnumber(L, idx)) {
@@ -57,11 +57,12 @@ static int64_t lua_tointegerx(lua_State *L, int idx, int *isnum) {
 	}
 }
 #endif
-
+//for luajit fix by D.K. 20200409 end 
 #endif
 
 #if LUA_VERSION_NUM < 503
 
+//for luajit fix by D.K. 20200409 begin 
 // work around , use push & lua_gettable may be better
 #define lua_geti lua_rawgeti
 #define lua_seti lua_rawseti
@@ -80,7 +81,7 @@ static int64_t lua_tointegerx(lua_State *L, int idx, int *isnum) {
 // 	lua_insert(L, -2);
 // 	lua_settable(L, index);
 // }
-
+//for luajit fix by D.K. 20200409 end 
 #endif
 
 static int
