@@ -2,10 +2,11 @@
 
 #include <lua.h>
 #include <lauxlib.h>
+//for luajit fix by D.K. 2020年04月09日21:02:59 begin 
 #ifndef LUAMOD_API
 #define LUAMOD_API	LUALIB_API
 #endif
-
+//for luajit fix by D.K. 2020年04月09日21:02:59 end 
 #include <time.h>
 #include <stdint.h>
 #include <string.h>
@@ -943,12 +944,14 @@ lxor_str(lua_State *L) {
 		return luaL_error(L, "Can't xor empty string");
 	}
 	luaL_Buffer b;
-	char * buffer = luaL_buffinitsize(L, &b, len1);
+	//for luajit fix by D.K. 2020年04月09日21:02:59 begin 
+	luaL_buffinit(L,&b);
+	
 	int i;
-	for (i=0;i<len1;i++) {
-		buffer[i] = s1[i] ^ s2[i % len2];
+	for (i = 0; i<len1; i++) {
+		luaL_putchar( &b,s1[i] ^ s2[i % len2]);
 	}
-	luaL_addsize(&b, len1);
+	//for luajit fix by D.K. 2020年04月09日21:02:59 end 
 	luaL_pushresult(&b);
 	return 1;
 }
@@ -957,9 +960,14 @@ lxor_str(lua_State *L) {
 int lsha1(lua_State *L);
 int lhmac_sha1(lua_State *L);
 
+
 LUAMOD_API int
 luaopen_skynet_crypt(lua_State *L) {
+//for luajit fix by D.K. 2020年04月09日21:02:59 begin 
+#ifdef luaL_checkversion
 	luaL_checkversion(L);
+#endif
+//for luajit fix by D.K. 2020年04月09日21:02:59 end 
 	static int init = 0;
 	if (!init) {
 		// Don't need call srandom more than once.

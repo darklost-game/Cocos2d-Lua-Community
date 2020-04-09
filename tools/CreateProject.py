@@ -8,6 +8,7 @@ SYNOPSIS
     CreateProject [-h]
 
     -h show help
+    -n set project_name default if last output dir name
     -p package name
     -o output dir
     -l set screen orientation to landscape, default if portrait.
@@ -35,12 +36,11 @@ def checkStringValid(string):
     else:
         return False
 
-def initDict(names, isLandscape):
+def initDict(project_name,names, isLandscape):
     packageName = (".").join(names)
-    lastName = names[2]
 
     replacementDict["__PROJECT_PACKAGE_FULL_NAME__"] = packageName
-    replacementDict["__PROJECT_COCOS_NAME__"] = lastName
+    replacementDict["__PROJECT_COCOS_NAME__"] = project_name
     if isLandscape:
         replacementDict["__SCREEN_ISLANDSCAPE__"] = "true"
         replacementDict["__SCREEN_WIDTH__"] = "960"
@@ -79,7 +79,7 @@ def createRootPath(outputDir):
     if os.path.exists(outputDir):
         print("Error: %s is already exist" %(outputDir))
         sys.exit(-2)
-    os.mkdir(outputDir)
+    os.makedirs(outputDir)
     if not os.path.exists(outputDir):
         print("Error: create %s fail" %(outputDir))
         sys.exit(-2)
@@ -121,13 +121,13 @@ def replaceFileContent(filePath, replaceItems):
         f.write(fileContent)
 
 
-def createProject(packageName, outputDir, isLandscape, needCopyCocos2d):
+def createProject(project_name,packageName, outputDir, isLandscape, needCopyCocos2d):
     names = checkPackageName(packageName)
-    lastName = names[2]
-    initDict(names, isLandscape)
+   
+    initDict(project_name,names, isLandscape)
 
     templateRoot = joinDir(engineRoot, "templates")
-    outputDir = joinDir(outputDir, lastName)
+    
 
     print("====> Copying template.")
     createRootPath(outputDir)
@@ -144,12 +144,12 @@ def createProject(packageName, outputDir, isLandscape, needCopyCocos2d):
 if __name__ == "__main__":
     # ===== parse args =====
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "hp:o:l")
+        opts, args = getopt.getopt(sys.argv[1:], "hp:o:n:l")
     except getopt.GetoptError:
         # print help information and exit:
         print(__doc__)
         sys.exit(-2)
-
+    project_name = ""
     packageName = ""
     outputDir = ""
     isLandscape = False
@@ -165,6 +165,8 @@ if __name__ == "__main__":
             outputDir = a
         if o == "-l":
             isLandscape = True
+        if o == "-n":
+            project_name = a
 
     if len(packageName) == 0:
         print("Error: use -p xxx.xxx.xxx to set package name")
@@ -172,7 +174,10 @@ if __name__ == "__main__":
     if len(outputDir) == 0:
         print("Error: use -o /path/path/ to set output dir")
         sys.exit(-2)
-
+    if len(project_name) == 0 :
+        project_name = os.path.basename(outputDir)
+        print("-n project_name not set use last output dir name :%s" %(project_name))
+    print("== project_name :%s" %(project_name))  
     # info printing
     print("== engineRoot: %s" %(engineRoot))
-    createProject(packageName, outputDir, isLandscape, needCopyCocos2d)
+    createProject(project_name,packageName, outputDir, isLandscape, needCopyCocos2d)
