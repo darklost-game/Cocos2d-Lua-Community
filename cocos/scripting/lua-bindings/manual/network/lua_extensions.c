@@ -51,6 +51,8 @@ LUALIB_API int luaopen_lpeg (lua_State *L);
 LUALIB_API int luaopen_sproto_core(lua_State *L);
 // lua-protobuf
 LUALIB_API int luaopen_lua_pb (lua_State *L);
+// client.crypt
+LUALIB_API int luaopen_client_crypt(lua_State *L);
 
 static luaL_Reg luax_exts[] = {
     {"socket.core", luaopen_socket_core}, // luasocket
@@ -65,6 +67,7 @@ static luaL_Reg luax_exts[] = {
     {"lpeg", luaopen_lpeg}, // sproto
     {"sproto.core", luaopen_sproto_core}, // sproto
     {"luapb", luaopen_lua_pb}, // lua-protobuf
+    {"client.crypt", luaopen_client_crypt}, // client.crypt
     {NULL, NULL}
 };
 
