@@ -89,8 +89,8 @@ $CreateProject.py -h
 
 ### launch.json
 修改exePath为runner 全路径 
-- win32 `${engineRoot}/tools/runner/bin/win32/LuaGameRunner.exe`
-- mac   `${engineRoot}tools/runner/bin/LuaGameRunner.app/Contents/MacOS/LuaGameRunner`
+- win32 `${engineRoot}\\tools\\runner\\bin\\LuaGameRunner\\LuaGameRunner.exe`
+- mac   `${engineRoot}/tools/runner/bin/LuaGameRunner.app/Contents/MacOS/LuaGameRunner`
 
 ```
 {
@@ -107,6 +107,7 @@ $CreateProject.py -h
             "localRoot": "${workspaceRoot}",
             "commandLine": "--width 1136 --height 640 --scale 75 --log --gamedir ${workspaceRoot} --writedir ${workspaceRoot}/log",
             "port": 7003,
+			//“exePath”:"D:workspace\\Cocos2d-Lua-Community\\tools\\runner\\bin\\LuaGameRunner\\LuaGameRunner.exe"，
             "exePath": "/Users/dengke/Documents/Cocos2d-Lua-Community/tools/runner/bin/LuaGameRunner.app/Contents/MacOS/LuaGameRunner",
             "fileExtNames": [
                 ".lua",
