@@ -2,12 +2,6 @@
 
 Cocos2d-Lua-Community is a improved of Cocos2d-x 4.0, and easy to use Lua game engine. It's Lua "frameworks" compatible with Quick-Cocos2dx-Community v3.7.x.
 
-## Get Help
-
-* [http://www.cocos2d-lua.org/](http://www.cocos2d-lua.org/)
-* QQ qun:
-	* 社区版 千人群(1群)号：361920466
-	* 社区版 2群：138934064
 
 ## Feature
 
@@ -35,9 +29,6 @@ Cocos2d-Lua-Community is a improved of Cocos2d-x 4.0, and easy to use Lua game e
 
 ## Lua Game Runner
 
-> Binary of LuaGameRunner is distribute in SkyDrive's Cocos2d-Lua-Community.zip, GitHub ONLY have the source code.
-
-> 链接: https://pan.baidu.com/s/162CmRTXFOSEChF6D5IJQzQ 提取码: 89jt 
 
 LuaGameRunner is a replacement of old Player. I just "Keep It Simple and Stupid".
 
@@ -85,10 +76,63 @@ $cd Cocos2d-Lua-Community
 $./tools/CreateProject.py -p www.www.newgame -o /ParentPath
 ```
 
-> The prject root directory is `/ParentPath/newgame`.
+> The prject root directory is `/ParentPath`.
 
 To get help info of CreateProject.py.
 
 ```
 $CreateProject.py -h
+```
+
+
+## vscode plugin luaide
+
+### launch.json
+修改exePath为runner 全路径 
+- win32 `${engineRoot}/tools/runner/bin/win32/LuaGameRunner.exe`
+- mac   `${engineRoot}tools/runner/bin/LuaGameRunner.app/Contents/MacOS/LuaGameRunner`
+
+```
+{
+    // 使用 IntelliSense 了解相关属性。 
+    // 悬停以查看现有属性的描述。
+    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Cocos2d-Lua-Community-launch",
+            "type": "lua",
+            "request": "launch",
+            "runtimeType": "Cocos2",
+            "localRoot": "${workspaceRoot}",
+            "commandLine": "--width 1136 --height 640 --scale 75 --log --gamedir ${workspaceRoot} --writedir ${workspaceRoot}/log",
+            "port": 7003,
+            "exePath": "/Users/dengke/Documents/Cocos2d-Lua-Community/tools/runner/bin/LuaGameRunner.app/Contents/MacOS/LuaGameRunner",
+            "fileExtNames": [
+                ".lua",
+                ".txt",
+                ".lua.txt",
+                ".bytes"
+            ],
+            "isFoxGloryProject": false,
+            "printType": 1
+        },
+        {
+            "name": "Cocos2d-Lua-Community(remote debugging)",
+            "type": "lua",
+            "request": "attach",
+            "runtimeType": "Cocos2",
+            "localRoot": "${workspaceRoot}",
+            "port": 7003,
+            "fileExtNames": [
+                ".lua",
+                ".txt",
+                ".lua.txt",
+                ".bytes"
+            ],
+            "isFoxGloryProject": false,
+            "printType": 1
+        }
+    ]
+}
 ```
