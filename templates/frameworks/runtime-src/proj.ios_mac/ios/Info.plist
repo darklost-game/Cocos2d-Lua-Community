@@ -41,8 +41,8 @@
     <true/>
     <key>UISupportedInterfaceOrientations</key>
     <array>
-        <string>__SCREEN_ORIENTATION_IOS5__</string>
-        <string>__SCREEN_ORIENTATION_IOS6__</string>
+        <string>__SCREEN_ORIENTATION_IOS_ARG_1__</string>
+        <string>__SCREEN_ORIENTATION_IOS_ARG_2__</string>
     </array>
     <key>NSHumanReadableCopyright</key>
     <string>Copyright © 2019. All rights reserved.</string>
