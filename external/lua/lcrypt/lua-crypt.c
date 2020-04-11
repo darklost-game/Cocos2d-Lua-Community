@@ -7,7 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
-#include <unistd.h>
+
 //for luajit fix by D.K. 20200409 begin
 
 #ifndef LUAMOD_API
@@ -42,7 +42,7 @@ typedef unsigned __int64     uint64_t;
 #else
 
 #include <stdint.h>
-
+#include <unistd.h>
 #endif
 
 //for luajit fix by D.K. 20200409 end
