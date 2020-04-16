@@ -48,10 +48,18 @@ set(res_res_folders
 set(res_src_folders
     "${CMAKE_CURRENT_SOURCE_DIR}/src"
     )
-if(APPLE OR VS)
+if(VS)
+    message(STATUS "res_res_folders: " ${res_res_folders})
+    message(STATUS "res_src_folders: " ${res_src_folders})
     cocos_mark_multi_resources(res_res RES_TO "Resources/res" FOLDERS ${res_res_folders})
     cocos_mark_multi_resources(res_src RES_TO "Resources/src" FOLDERS ${res_src_folders})
     set(cc_common_res ${res_res} ${res_src} ${res_script})
+elseif(APPLE)
+     set(cc_common_res
+         ${res_src_folders}
+         ${res_res_folders}
+     )
+     
 endif()
 
 # record sources, headers
@@ -76,12 +84,16 @@ elseif(WINDOWS)
          ${cc_common_res}
          )
 elseif(APPLE)
+    source_group("Resources" FILES ${cc_common_res})
+    set(APP_UI_RES
+            ${cc_common_res}
+        )
     if(IOS)
         list(APPEND GAME_HEADER
              ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/AppController.h
              ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/RootViewController.h
              )
-        set(APP_UI_RES
+        list(APPEND APP_UI_RES
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreen.storyboard
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreenBackground.png
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Images.xcassets
@@ -97,7 +109,7 @@ elseif(APPLE)
         list(APPEND GAME_HEADER
              ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindowController.h
              )
-        set(APP_UI_RES
+        list(APPEND APP_UI_RES
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Icon.icns
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/Info.plist
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/mac/ConsoleWindow.xib
@@ -109,7 +121,9 @@ elseif(APPLE)
              ${APP_UI_RES}
              )
     endif()
-    list(APPEND GAME_SOURCE ${cc_common_res})
+
+    # not copy to add foler 
+    message(STATUS "APP_UI_RES: " ${APP_UI_RES})
 endif()
 
 set(APP_SRC ${GAME_HEADER} ${GAME_SOURCE})
