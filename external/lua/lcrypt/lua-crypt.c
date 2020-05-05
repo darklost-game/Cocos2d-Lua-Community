@@ -42,12 +42,13 @@ typedef unsigned __int64     uint64_t;
 #else
 
 #include <stdint.h>
-
-#endif
-
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 #include <unistd.h>
 #endif /* (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) */
+
+#endif
+
+
 
 //for luajit fix by D.K. 20200409 end 
 #define SMALL_CHUNK 256
