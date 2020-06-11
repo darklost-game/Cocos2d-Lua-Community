@@ -13,6 +13,7 @@ function MainScene:ctor()
 		"Test_Audio",
 		"Test_FairyGUI",
 		"Test_FairyGUIProgress",
+		"Test_Network",
 		"Test_WebSocket",
 		"Test_LuaProtobuf",
 		"Test_Sproto",
