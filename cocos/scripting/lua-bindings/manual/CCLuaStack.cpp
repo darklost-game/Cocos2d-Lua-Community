@@ -692,6 +692,9 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
                         if (filename.find("framework.protobuf.") != std::string::npos) {
                             offset = 19;
                         }
+                        if (filename.find("framework.sproto.") != std::string::npos) {
+                            offset = 17;
+                        }
                         lua_setfield(L, -3, filename.c_str() + offset);
                         // clear loaded, make the next require run the new module.
                         lua_pushnil(L);
