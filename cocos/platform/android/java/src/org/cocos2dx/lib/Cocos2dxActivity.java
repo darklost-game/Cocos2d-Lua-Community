@@ -162,7 +162,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         }
 
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         initPermission();
     }
 
