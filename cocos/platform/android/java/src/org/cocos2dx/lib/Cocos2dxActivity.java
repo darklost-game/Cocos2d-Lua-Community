@@ -133,6 +133,12 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
         this.hideVirtualButton();
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			WindowManager.LayoutParams lp = getWindow().getAttributes();
+			lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+			getWindow().setAttributes(lp);
+		}
+
         onLoadNativeLibraries();
 
         sContext = this;
@@ -155,8 +161,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             mEditBoxHelper = new Cocos2dxEditBoxHelper(mFrameLayout);
         }
 
-        Window window = this.getWindow();
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         initPermission();
     }
@@ -360,7 +365,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         }
     }
 
-    private void initPermission() {
+	private void initPermission() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String allpermissions[] = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE};
             ArrayList<String> permissions = new ArrayList<String>();
@@ -427,7 +432,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             }
 
             if (permissions.size() > 0) {
-                this.requestPermissions( permissions.toArray(new String[permissions.size()]), 1001);
+                this.requestPermissions(permissions.toArray(new String[permissions.size()]), 1001);
                 return;
             }
         }
