@@ -45,6 +45,10 @@ public:
     std::vector<std::string>& getItems() { return _items; }
     std::vector<std::string>& getIcons() { return _icons; }
     std::vector<std::string>& getValues() { return _values; }
+
+    void addItem(const std::string& value) {  _items.push_back(value); }
+    void addIcon(const std::string& value) {  _icons.push_back(value); }
+    void addValue(const std::string& value) {  _values.push_back(value); }
     
     GObject* getDropdown() const { return _dropdown; }
 
