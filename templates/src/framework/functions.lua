@@ -417,13 +417,15 @@ function io.pathinfo(path)
     local pos = string.len(path)
     local extpos = pos + 1
     while pos > 0 do
-        local b = string.byte(path, pos)
-        if b == 46 then -- 46 = char "."
-            extpos = pos
-        elseif b == 47 then -- 47 = char "/"
-            break
-        end
-        pos = pos - 1
+      local b = string.byte(path, pos)
+      if b == 46 then -- 46 = char "." lua
+          extpos = pos
+      elseif b == 47 then -- 47 = char "/"    unix
+          break
+      elseif b == 92 then -- 92 = char "\"    windwos
+          break
+      end
+      pos = pos - 1
     end
 
     local dirname = string.sub(path, 1, pos)
