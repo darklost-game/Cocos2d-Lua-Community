@@ -5580,6 +5580,37 @@ static int lua_fairygui_UIPackage_getVar(lua_State* tolua_S)
 #endif
 }
 
+
+static int lua_fairygui_UIPackage_SetStringsSource(lua_State* tolua_S)
+{
+    int argc = 0;
+    bool ok = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertable(tolua_S, 1, "fairygui.UIPackage", 0, &tolua_err)) goto tolua_lerror;
+#endif
+
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 1) {
+        std::string arg0;
+        ok &= luaval_to_std_string(tolua_S, 2, &arg0, "fairygui.UIPackage:SetStringsSource");
+        if (!ok) {
+            tolua_error(tolua_S, "invalid arguments in function 'lua_fairygui_UIPackage_SetStringsSource'", nullptr);
+            return 0;
+        }
+        fairygui::UIPackage::SetStringsSource(arg0);
+        return 0;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "fairygui.UIPackage:SetStringsSource", argc, 1);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S, "#ferror in function 'lua_fairygui_UIPackage_SetStringsSource'.", &tolua_err);
+    return 0;
+#endif
+}
+
 static int lua_register_fairygui_UIPackage(lua_State* tolua_S)
 {
 	tolua_usertype(tolua_S,"fairygui.UIPackage");
@@ -5605,6 +5636,7 @@ static int lua_register_fairygui_UIPackage(lua_State* tolua_S)
     tolua_function(tolua_S, "getBranch", lua_fairygui_UIPackage_getBranch);
     tolua_function(tolua_S, "setVar", lua_fairygui_UIPackage_setVar);
     tolua_function(tolua_S, "getVar", lua_fairygui_UIPackage_getVar);
+    tolua_function(tolua_S, "SetStringsSource", lua_fairygui_UIPackage_SetStringsSource);
     
 	tolua_endmodule(tolua_S);
 	std::string typeName = typeid(fairygui::UIPackage).name();

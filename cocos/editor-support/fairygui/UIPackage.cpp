@@ -4,6 +4,7 @@
 #include "event/HitTest.h"
 #include "utils/ByteBuffer.h"
 #include "utils/ToolSet.h"
+#include "TranslationHelper.h"
 
 NS_FGUI_BEGIN
 USING_NS_CC;
@@ -71,6 +72,13 @@ void UIPackage::setVar(const std::string& key, const std::string& value)
     _vars[key] = value;
 }
 
+void UIPackage::SetStringsSource( const std::string& source)
+{
+    Data data=FileUtils::getInstance()->getDataFromFile(source);
+    
+    TranslationHelper::loadFromXML((const char *)data.getBytes(), data.getSize());
+}
+
 UIPackage* UIPackage::getById(const string& id)
 {
     auto it = _packageInstById.find(id);
@@ -103,10 +111,10 @@ UIPackage* UIPackage::addPackage(const string& assetPath)
         _emptyTexture->initWithImage(emptyImage);
         delete emptyImage;
     }
-
-    Data data;
-
-    if (FileUtils::getInstance()->getContents(assetPath + ".fui", &data) != FileUtils::Status::OK)
+    //支持fui文件加密
+    Data data =  FileUtils::getInstance()->getDataFromFile(assetPath + ".fui");
+    
+    if (data.isNull())
     {
         CCLOGERROR("FairyGUI: cannot load package from '%s'", assetPath.c_str());
         return nullptr;
