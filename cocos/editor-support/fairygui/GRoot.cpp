@@ -51,6 +51,19 @@ GRoot::~GRoot()
         Director::getInstance()->getEventDispatcher()->removeEventListener(_windowSizeListener);
 }
 
+void GRoot::removeChildAt(int index)
+{
+    GComponent::removeChildAt(index);
+    adjustModalLayer();
+}
+
+GObject* GRoot::addChildAt(GObject* child, int index)
+{
+    GObject* c = GComponent::addChildAt(child, index);
+    adjustModalLayer();
+    return c;
+}
+
 void GRoot::showWindow(Window* win)
 {
     addChild(win);
@@ -529,6 +542,9 @@ bool GRoot::initWithScene(cocos2d::Scene* scene, int zOrder)
     if (!GComponent::init())
         return false;
 
+    if (_inst == nullptr)
+        _inst = this;
+    
     _inputProcessor = new InputProcessor(this);
     _inputProcessor->setCaptureCallback(CC_CALLBACK_1(GRoot::onTouchEvent, this));
 

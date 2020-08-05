@@ -277,10 +277,7 @@ int GComponent::setChildIndexBefore(GObject* child, int index)
             index = cnt - _sortingChildCount - 1;
     }
 
-    if (oldIndex < index)
-        return moveChild(child, oldIndex, index - 1);
-    else
-        return moveChild(child, oldIndex, index);
+    return moveChild(child, oldIndex, index);
 }
 
 int GComponent::moveChild(GObject* child, int oldIndex, int index)
@@ -651,10 +648,10 @@ void GComponent::updateBounds()
             tmp = child->getY();
             if (tmp < ay)
                 ay = tmp;
-            tmp = child->getX() + child->getWidth();
+            tmp = child->getX() + child->getWidth() * child->getScaleX();
             if (tmp > ar)
                 ar = tmp;
-            tmp = child->getY() + child->getHeight();
+            tmp = child->getY() + child->getHeight() * child->getScaleY();
             if (tmp > ab)
                 ab = tmp;
         }
