@@ -53,6 +53,8 @@ LUALIB_API int luaopen_sproto_core(lua_State *L);
 LUALIB_API int luaopen_lua_pb (lua_State *L);
 // client.crypt
 LUALIB_API int luaopen_client_crypt(lua_State *L);
+// qrencode
+#include "qrencode/lua_qrcode.h"
 
 static luaL_Reg luax_exts[] = {
     {"socket.core", luaopen_socket_core}, // luasocket
@@ -68,6 +70,8 @@ static luaL_Reg luax_exts[] = {
     {"sproto.core", luaopen_sproto_core}, // sproto
     {"luapb", luaopen_lua_pb}, // lua-protobuf
     {"client.crypt", luaopen_client_crypt}, // client.crypt
+    {"qrcode", luaopen_qrcode}, // qrcode
+    {"qr", luaopen_qrcode}, // qrcode
     {NULL, NULL}
 };
 

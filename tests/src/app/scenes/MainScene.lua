@@ -21,6 +21,7 @@ function MainScene:ctor()
 		"Test_Spine",
 		"Test_RichText",
 		"Test_TMXTiledMap",
+		"Test_QRCode",
 	}
 
 	local scrollView = ccui.ScrollView:create()
