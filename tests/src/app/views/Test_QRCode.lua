@@ -2,7 +2,7 @@ local BaseLayer = require("app.scenes.BaseLayer")
 
 local TestCase = class("Test_ClientCrypt", BaseLayer)
 
-local qrcode = require "qrcode"
+
 
 
 
@@ -27,9 +27,15 @@ end
 
 function TestCase:test( )
 
-	dump(qrcode)
-	local version,width,data =qrcode.encode("test",1)
-	print(version,width,#data)
+	dump(cc.qrcode)
+	require "lfs"
+
+	local qrcodeCache=device.writablePath.."qrcode/"
+	if not io.exists(qrcodeCache) then
+		lfs.mkdir(qrcodeCache)
+	end
+	cc.qrcode:encode_write_to_png("test",qrcodeCache.."1.png")
+	print(qrcodeCache)
 end
 
 

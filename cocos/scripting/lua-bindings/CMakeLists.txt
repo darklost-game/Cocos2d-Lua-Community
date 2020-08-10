@@ -36,6 +36,7 @@ set(lua_bindings_manual_headers
     manual/controller/lua_cocos2dx_controller_manual.hpp
     manual/extra/lua_extra_manual.h
     manual/extra/lua_crypto_manual.h
+    manual/extra/lua_qrencode_manual.h
     )
 
 set(lua_bindings_manual_files
@@ -75,6 +76,7 @@ set(lua_bindings_manual_files
     manual/navmesh/lua_cocos2dx_navmesh_manual.cpp
     manual/extra/lua_extra_manual.cpp
     manual/extra/lua_crypto_manual.cpp
+    manual/extra/lua_qrencode_manual.cpp
     )
 
 set(lua_bindings_auto_headers

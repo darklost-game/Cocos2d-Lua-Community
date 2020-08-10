@@ -109,6 +109,9 @@ endif(BUILD_EXT_OPENSSL)
 add_subdirectory(png)
 target_link_libraries(external ext_png)
 
+add_subdirectory(qrencode)
+target_link_libraries(external ext_qrencode)
+
 # use lua/js specific libs by property to prevent conflict
 if(BUILD_LUA_LIBS)
     add_subdirectory(lua/luajit)
@@ -125,9 +128,8 @@ if(BUILD_LUA_LIBS)
     add_subdirectory(lua/lzlib)
     add_subdirectory(lua/protobuf)
     add_subdirectory(lua/lua-protobuf)
-    add_subdirectory(lua/qrencode)
     set_property(TARGET external APPEND PROPERTY 
-        CC_LUA_DEPEND ext_luajit ext_tolua ext_cjson ext_crypt ext_lfs ext_lpack ext_lpeg ext_lsproto ext_lsqlite3 ext_luasocket ext_lunqlite ext_lzlib ext_protobuf ext_lua-protobuf ext_qrencode
+        CC_LUA_DEPEND ext_luajit ext_tolua ext_cjson ext_crypt ext_lfs ext_lpack ext_lpeg ext_lsproto ext_lsqlite3 ext_luasocket ext_lunqlite ext_lzlib ext_protobuf ext_lua-protobuf 
     )
 endif()
 

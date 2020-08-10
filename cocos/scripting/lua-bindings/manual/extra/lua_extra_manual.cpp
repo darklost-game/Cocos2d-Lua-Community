@@ -2,7 +2,7 @@
 
 #include "scripting/lua-bindings/manual/extra/lua_extra_manual.h"
 #include "scripting/lua-bindings/manual/extra/lua_crypto_manual.h"
-
+#include "scripting/lua-bindings/manual/extra/lua_qrencode_manual.h"
 static int tolua_Cocos2d_Function_loadChunksFromZIP(lua_State* tolua_S)
 {
     return cocos2d::LuaEngine::getInstance()->getLuaStack()->luaLoadChunksFromZIP(tolua_S);
@@ -20,5 +20,6 @@ TOLUA_API int register_extra_manual_all(lua_State* tolua_S)
 {
     register_crypto_module(tolua_S);
     cc_extend_functions(tolua_S);
+    register_qrencode_module(tolua_S);
     return 1;
 }
