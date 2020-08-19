@@ -1440,17 +1440,27 @@ static int lua_fairygui_GController_setSelectedIndex(lua_State* tolua_S)
 #endif
 
 	argc = lua_gettop(tolua_S)-1;
-	if (argc == 1) {
+	if (argc >= 1 && argc <= 2) {
 		int arg0;
-		ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "fairygui.GController:setSelectedIndex");
+		ok &= luaval_to_int32(tolua_S, 2, &arg0, "fairygui.GController:setSelectedIndex");
 		if (!ok) {
 			tolua_error(tolua_S,"invalid arguments in function 'lua_fairygui_GController_setSelectedIndex'", nullptr);
 			return 0;
 		}
-		cobj->setSelectedIndex(arg0);
+        if (argc > 1) {
+            bool arg1;
+            ok &= luaval_to_boolean(tolua_S, 3, &arg1, "fairygui.GController:setSelectedIndex");
+            if (!ok) {
+                tolua_error(tolua_S,"invalid arguments in function 'lua_fairygui_GController_setSelectedIndex'", nullptr);
+                return 0;
+            }
+            cobj->setSelectedIndex(arg0, arg1);
+        } else {
+            cobj->setSelectedIndex(arg0);
+        }
         return 0;
 	}
-	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GController:setSelectedIndex",argc, 1);
+	luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting 1~2\n", "fairygui.GController:setSelectedIndex",argc);
 	return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -10219,6 +10229,290 @@ tolua_lerror:
 #endif
 }
 
+static int lua_fairygui_GGroup_isExcludeInvisibles(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_isExcludeInvisibles'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) {
+        lua_pushboolean(tolua_S,(int)cobj->isExcludeInvisibles());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:isExcludeInvisibles",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_isExcludeInvisibles'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_setExcludeInvisibles(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+    bool ok = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_setExcludeInvisibles'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) {
+        bool arg0;
+        ok &= luaval_to_boolean(tolua_S, 2, &arg0, "fairygui.GGroup:setExcludeInvisibles");
+        if (!ok) {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_fairygui_GGroup_setExcludeInvisibles'", nullptr);
+            return 0;
+        }
+        cobj->setExcludeInvisibles(arg0);
+        return 0;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:setExcludeInvisibles",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_setExcludeInvisibles'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_isAutoSizeDisabled(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_isAutoSizeDisabled'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) {
+        lua_pushboolean(tolua_S,(int)cobj->isAutoSizeDisabled());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:isAutoSizeDisabled",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_isAutoSizeDisabled'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_setAutoSizeDisabled(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+    bool ok = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_setAutoSizeDisabled'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) {
+        bool arg0;
+        ok &= luaval_to_boolean(tolua_S, 2, &arg0, "fairygui.GGroup:setAutoSizeDisabled");
+        if (!ok) {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_fairygui_GGroup_setAutoSizeDisabled'", nullptr);
+            return 0;
+        }
+        cobj->setAutoSizeDisabled(arg0);
+        return 0;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:setAutoSizeDisabled",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_setAutoSizeDisabled'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_getMainGridIndex(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_getMainGridIndex'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) {
+        lua_pushinteger(tolua_S, cobj->getMainGridIndex());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:getMainGridIndex",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_getMainGridIndex'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_setMainGridIndex(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+    bool ok = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_setMainGridIndex'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) {
+        int arg0;
+        ok &= luaval_to_int32(tolua_S, 2, &arg0, "fairygui.GGroup:setMainGridIndex");
+        if (!ok) {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_fairygui_GGroup_setMainGridIndex'", nullptr);
+            return 0;
+        }
+        cobj->setMainGridIndex(arg0);
+        return 0;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:setMainGridIndex",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_setMainGridIndex'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_getMainGridMinSize(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_getMainGridMinSize'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) {
+        lua_pushinteger(tolua_S, cobj->getMainGridMinSize());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:getMainGridMinSize",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_getMainGridMinSize'.",&tolua_err);
+    return 0;
+#endif
+}
+
+static int lua_fairygui_GGroup_setMainGridMinSize(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::GGroup* cobj = nullptr;
+    bool ok = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.GGroup",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::GGroup*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_GGroup_setMainGridMinSize'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) {
+        int arg0;
+        ok &= luaval_to_int32(tolua_S, 2, &arg0, "fairygui.GGroup:setMainGridMinSize");
+        if (!ok) {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_fairygui_GGroup_setMainGridMinSize'", nullptr);
+            return 0;
+        }
+        cobj->setMainGridMinSize(arg0);
+        return 0;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.GGroup:setMainGridMinSize",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_GGroup_setMainGridMinSize'.",&tolua_err);
+    return 0;
+#endif
+}
+
 static int lua_fairygui_GGroup_create(lua_State* tolua_S)
 {
 	int argc = 0;
@@ -10258,6 +10552,14 @@ static int lua_register_fairygui_GGroup(lua_State* tolua_S)
 	tolua_function(tolua_S,"getLineGap",lua_fairygui_GGroup_getLineGap);
 	tolua_function(tolua_S,"setLineGap",lua_fairygui_GGroup_setLineGap);
 	tolua_function(tolua_S,"getLayout",lua_fairygui_GGroup_getLayout);
+    tolua_function(tolua_S,"isExcludeInvisibles",lua_fairygui_GGroup_isExcludeInvisibles);
+    tolua_function(tolua_S,"setExcludeInvisibles",lua_fairygui_GGroup_setExcludeInvisibles);
+    tolua_function(tolua_S,"isAutoSizeDisabled",lua_fairygui_GGroup_isAutoSizeDisabled);
+    tolua_function(tolua_S,"setAutoSizeDisabled",lua_fairygui_GGroup_setAutoSizeDisabled);
+    tolua_function(tolua_S,"getMainGridIndex",lua_fairygui_GGroup_getMainGridIndex);
+    tolua_function(tolua_S,"setMainGridIndex",lua_fairygui_GGroup_setMainGridIndex);
+    tolua_function(tolua_S,"getMainGridMinSize",lua_fairygui_GGroup_getMainGridMinSize);
+    tolua_function(tolua_S,"setMainGridMinSize",lua_fairygui_GGroup_setMainGridMinSize);
 	tolua_function(tolua_S,"create", lua_fairygui_GGroup_create);
 	tolua_endmodule(tolua_S);
 	std::string typeName = typeid(fairygui::GGroup).name();
@@ -22593,6 +22895,30 @@ tolua_lerror:
 #endif
 }
 
+static int lua_fairygui_DragDropManager_destroyInstance(lua_State* tolua_S)
+{
+    int argc = 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertable(tolua_S,1,"fairygui.DragDropManager",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    argc = lua_gettop(tolua_S) - 1;
+    if (argc == 0) {
+        fairygui::DragDropManager::destroyInstance();
+        return 0;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "fairygui.DragDropManager:destroyInstance",argc, 0);
+    return 0;
+    
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_DragDropManager_destroyInstance'.",&tolua_err);
+    return 0;
+#endif
+}
+
 static int lua_register_fairygui_DragDropManager(lua_State* tolua_S)
 {
 	tolua_usertype(tolua_S,"fairygui.DragDropManager");
@@ -22604,6 +22930,7 @@ static int lua_register_fairygui_DragDropManager(lua_State* tolua_S)
 	tolua_function(tolua_S,"getAgent",lua_fairygui_DragDropManager_getAgent);
 	tolua_function(tolua_S,"startDrag",lua_fairygui_DragDropManager_startDrag);
 	tolua_function(tolua_S,"getInstance", lua_fairygui_DragDropManager_getInstance);
+    tolua_function(tolua_S,"destroyInstance", lua_fairygui_DragDropManager_destroyInstance);
 	tolua_endmodule(tolua_S);
 	std::string typeName = typeid(fairygui::DragDropManager).name();
 	g_luaType[typeName] = "fairygui.DragDropManager";
@@ -23239,6 +23566,54 @@ static int lua_register_fairygui_GBasicTextField(lua_State* tolua_S)
     return 1;
 }
 
+static int lua_fairygui_InputProcessor_getRecentInput(lua_State* tolua_S)
+{
+    int argc = 0;
+    fairygui::InputProcessor* cobj = nullptr;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(tolua_S,1,"fairygui.InputProcessor",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (fairygui::InputProcessor*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_fairygui_InputProcessor_getRecentInput'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) {
+        fairygui::InputEvent *ret = cobj->getRecentInput();
+        object_to_luaval<fairygui::InputEvent>(tolua_S, "fairygui.InputEvent", ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "fairygui.InputProcessor:getRecentInput",argc,0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_fairygui_InputProcessor_getRecentInput'.",&tolua_err);
+    return 0;
+#endif
+}
+
+// InputProcessor is return by GRoot::getInputProcessor()
+static int lua_register_fairygui_InputProcessor(lua_State* tolua_S)
+{
+    tolua_usertype(tolua_S,"fairygui.InputProcessor");
+    tolua_cclass(tolua_S,"InputProcessor","fairygui.InputProcessor","",nullptr);
+
+    tolua_beginmodule(tolua_S,"InputProcessor");
+    tolua_function(tolua_S,"getRecentInput",lua_fairygui_InputProcessor_getRecentInput);
+    tolua_endmodule(tolua_S);
+    std::string typeName = typeid(fairygui::InputProcessor).name();
+    g_luaType[typeName] = "fairygui.InputProcessor";
+    g_typeCast["InputProcessor"] = "fairygui.InputProcessor";
+    return 1;
+}
+
 TOLUA_API int register_fairygui_manual(lua_State* tolua_S)
 {
 	lua_getglobal(tolua_S, "_G");
@@ -23282,6 +23657,7 @@ TOLUA_API int register_fairygui_manual(lua_State* tolua_S)
         lua_register_fairygui_GLabel(tolua_S);
         lua_register_fairygui_FUIInput(tolua_S);
         lua_register_fairygui_GBasicTextField(tolua_S);
+        lua_register_fairygui_InputProcessor(tolua_S);
 
 		tolua_endmodule(tolua_S);
 	}

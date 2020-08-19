@@ -11,6 +11,7 @@ c.NODE_ENTER_FRAME_EVENT     = 2
 c.NODE_TOUCH_EVENT           = 3
 c.KEYPAD_EVENT               = 4
 c.ACCELEROMETER_EVENT        = 5
+c.MOUSE_EVENT                = 6
 
 -- touch mode
 c.TOUCH_MODE_ALL_AT_ONCE              = cc.TOUCHES_ALL_AT_ONCE
@@ -225,7 +226,77 @@ end
   @return boolean
 ]]--
 function Node:isKeypadEnabled()
-    if self.__key_event_handle__ then
+	if self.__key_event_handle__ then
+		return true
+	end
+	return false
+end
+
+local function MouseEventCodeConvert(code)
+	local key
+	if code == 0 then
+		key = "left"
+	elseif code == 1 then
+		key = "right"
+	elseif code == 2 then
+		key = "middle"
+	else
+		key = tostring(code)
+	end
+	return key
+end
+
+function Node:setMouseEnabled(enable)
+	if enable == self:isMouseEnabled() then
+		return self
+	end
+
+	local eventDispatcher = self:getEventDispatcher()
+	if enable then
+		local dealFunc = function(mouse, name)
+			local tp = mouse:getLocationInView()
+			local sp = mouse:getStartLocationInView()
+			local pp = mouse:getPreviousLocationInView()
+
+			-- call listener
+			self._LuaListeners[c.MOUSE_EVENT]{
+				name = name,
+				x = tp.x,
+				y = tp.y,
+				startX = sp.x,
+				startY = sp.y,
+				prevX = pp.x,
+				prevY = pp.y,
+				scroll = mouse:getScrollY(),
+				key = MouseEventCodeConvert(mouse:getMouseButton())
+			}
+		end
+
+		local listener = c.EventListenerMouse:create()
+		listener:registerScriptHandler(function(mouse)
+			dealFunc(mouse, "down")
+		end, c.Handler.EVENT_MOUSE_DOWN)
+		listener:registerScriptHandler(function(mouse)
+			dealFunc(mouse, "up")
+		end, c.Handler.EVENT_MOUSE_UP)
+		listener:registerScriptHandler(function(mouse)
+			dealFunc(mouse, "move")
+		end, c.Handler.EVENT_MOUSE_MOVE)
+		listener:registerScriptHandler(function(mouse)
+			dealFunc(mouse, "scroll")
+		end, c.Handler.EVENT_MOUSE_SCROLL)
+		eventDispatcher:addEventListenerWithSceneGraphPriority(listener, self)
+		self.__mouse_event_handle__ = listener
+	else
+		eventDispatcher:removeEventListener(self.__mouse_event_handle__)
+		self.__mouse_event_handle__ = nil
+	end
+
+	return self
+end
+
+function Node:isMouseEnabled()
+	if self.__mouse_event_handle__ then
 		return true
 	end
 	return false
@@ -385,6 +456,7 @@ end
     cc.NODE_TOUCH_EVENT
     cc.KEYPAD_EVENT
     cc.ACCELEROMETER_EVENT
+    cc.MOUSE_EVENT
   @param function hdl
 ]]--
 function Node:addNodeEventListener(evt, hdl)
@@ -408,6 +480,7 @@ end
     cc.NODE_TOUCH_EVENT
     cc.KEYPAD_EVENT
     cc.ACCELEROMETER_EVENT
+    cc.MOUSE_EVENT
 ]]--
 function Node:removeNodeEventListener(evt)
     if not self._LuaListeners then return end
@@ -422,6 +495,8 @@ function Node:removeNodeEventListener(evt)
 		self:setTouchEnabled(false)
 	elseif evt == c.ACCELEROMETER_EVENT then
 		cc.Device:setAccelerometerEnabled(false)
+	elseif evt == c.MOUSE_EVENT then
+		self:setMouseEnabled(false)
 	end
 
 	self._LuaListeners[evt] = nil
@@ -437,4 +512,5 @@ function Node:removeAllNodeEventListeners()
     self:removeNodeEventListener(c.NODE_TOUCH_EVENT)
     self:removeNodeEventListener(c.KEYPAD_EVENT)
     self:removeNodeEventListener(c.ACCELEROMETER_EVENT)
+    self:removeNodeEventListener(c.MOUSE_EVENT)
 end
