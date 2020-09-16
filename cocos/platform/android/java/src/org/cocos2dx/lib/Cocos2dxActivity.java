@@ -36,6 +36,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.os.PowerManager;
 import android.preference.PreferenceManager.OnActivityResultListener;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -53,12 +55,16 @@ import org.cocos2dx.utils.PSNetwork;
 import org.cocos2dx.utils.PSDevice;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
 
-public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelperListener {
+import pub.devrel.easypermissions.AppSettingsDialog;
+import pub.devrel.easypermissions.EasyPermissions;
+
+public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelperListener ,EasyPermissions.PermissionCallbacks {
     // ===========================================================
     // Constants
     // ===========================================================
@@ -78,7 +84,15 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     private Cocos2dxEditBoxHelper mEditBoxHelper = null;
     private boolean hasFocus = false;
     private boolean showVirtualButton = false;
+    //要请求的权限
 
+    private String permissions[] = new String[]{
+        Manifest.permission.ACCESS_NETWORK_STATE,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+
+    };
     public Cocos2dxGLSurfaceView getGLSurfaceView(){
         return  mGLSurfaceView;
     }
@@ -239,6 +253,13 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         }
 
         super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            //当从软件设置界面，返回当前程序时候
+            case AppSettingsDialog.DEFAULT_SETTINGS_REQ_CODE:
+                initPermission();
+                break;
+
+        }
     }
 
 
@@ -365,79 +386,56 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     }
 
 	private void initPermission() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            String allpermissions[] = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE};
-            ArrayList<String> permissions = new ArrayList<String>();
-            boolean needPop = false;
+        String title = "应用需要以下权限才能继续运行，请开启。";
 
-            for (String permission : allpermissions) {
-                if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(this, permission)) {
-                    if (shouldShowRequestPermissionRationale(permission)) {
-                        permissions.add(permission);
-                    } else {
-                        needPop = true;
-                    }
-                }
-            }
+        if (Cocos2dxHelper.getCurrentLanguage() != "zh") {
+            title = "App needs the following permissions to continue running, please grant it.";
 
-            if (needPop) {
-                // init Alert strings
-                String title = "请在设置中，开启程序权限, 点击权限。";
-                String conform = "确认";
-                String cancel = "取消";
-                if (Cocos2dxHelper.getCurrentLanguage() != "zh") {
-                    title = "Please grant the permissions in settings.";
-                    conform = "OK";
-                    cancel = "Cancel";
-                }
-                final String fTitle = title;
-                final String fconform = conform;
-                final String fcancel = cancel;
-
-                // on clicked handler
-                final DialogInterface.OnClickListener okHandler = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                        Uri uri = Uri.fromParts("package", getPackageName(), null);
-                        intent.setData(uri);
-                        startActivity(intent);
-                        finish();
-                    }
-                };
-
-                // on clicked handler
-                final DialogInterface.OnClickListener noHandler = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        finish();
-                    }
-                };
-
-                // new alert
-                sContext.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(sContext)
-                                .setMessage(fTitle)
-                                .setPositiveButton(fconform, okHandler)
-                                .setNegativeButton(fcancel, noHandler)
-                                .create()
-                                .show();
-                    }
-                });
-                return;
-            }
-
-            if (permissions.size() > 0) {
-                this.requestPermissions(permissions.toArray(new String[permissions.size()]), 1001);
-                return;
-            }
         }
-        // final, can safe init PS module
-        PSNetwork.init(this);
-        PSDevice.init(this);
+        if (EasyPermissions.hasPermissions(this, permissions)) {//判断是否拥有权限
+            // final, can safe init PS module
+            PSNetwork.init(this);
+            PSDevice.init(this);
+        } else {
+            //请求权限
+            EasyPermissions.requestPermissions(this, title, 0, permissions);
+        }
+
+
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        initPermission();
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {//拒绝权限且点击了不再提示
+            String title = "请在设置中，开启程序所需权限, 点击权限。";
+            String conform = "确认";
+            String cancel = "取消";
+            if (Cocos2dxHelper.getCurrentLanguage() != "zh") {
+                title = "Please grant the permissions in settings.";
+                conform = "OK";
+                cancel = "Cancel";
+            }
+            new AppSettingsDialog.Builder(this)
+                .setTitle(title)
+                .setRationale(getString(R.string.rationale_ask_again))
+                .setPositiveButton(conform)
+                .setNegativeButton(cancel)
+                .build().show();//跳转应用设置页面
+        } else {
+            String title = "应用需要以下权限才能继续运行，请开启。";
+
+            if (Cocos2dxHelper.getCurrentLanguage() != "zh") {
+                title = "App needs the following permissions to continue running, please grant it.";
+
+            }
+            EasyPermissions.requestPermissions(this, title, 1, perms.toArray(new String[perms.size()]));
+        }
+
     }
 
     @TargetApi(Build.VERSION_CODES.M)
@@ -445,12 +443,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults){
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         this.hasFocus = true;
-
-        if (requestCode != 1001) { // request code define by me.
-            return;
-        }
-
-        initPermission();
+        //注册请求权限结果
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
 
     // ===========================================================
