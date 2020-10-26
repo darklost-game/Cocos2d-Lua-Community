@@ -53,6 +53,8 @@ import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
 import org.cocos2dx.utils.PSNetwork;
 import org.cocos2dx.utils.PSDevice;
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.egl.EGLDisplay;
@@ -131,6 +133,12 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
         this.hideVirtualButton();
 
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+			WindowManager.LayoutParams lp = getWindow().getAttributes();
+			lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+			getWindow().setAttributes(lp);
+		}
+
         onLoadNativeLibraries();
 
         sContext = this;
@@ -153,8 +161,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
             mEditBoxHelper = new Cocos2dxEditBoxHelper(mFrameLayout);
         }
 
-        Window window = this.getWindow();
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         initPermission();
     }
@@ -358,16 +365,16 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         }
     }
 
-    private void initPermission() {
+	private void initPermission() {
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             String allpermissions[] = {Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE};
-            String permissions[] = {};
+            ArrayList<String> permissions = new ArrayList<String>();
             boolean needPop = false;
 
             for (String permission : allpermissions) {
                 if (PackageManager.PERMISSION_DENIED == ContextCompat.checkSelfPermission(this, permission)) {
                     if (shouldShowRequestPermissionRationale(permission)) {
-                        permissions[permissions.length] = permission;
+                        permissions.add(permission);
                     } else {
                         needPop = true;
                     }
@@ -424,8 +431,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
                 return;
             }
 
-            if (permissions.length > 0) {
-                this.requestPermissions(permissions, 1001);
+            if (permissions.size() > 0) {
+                this.requestPermissions(permissions.toArray(new String[permissions.size()]), 1001);
                 return;
             }
         }

@@ -9,6 +9,10 @@
 #include "renderer/CCPipelineDescriptor.h"
 #include "scripting/lua-bindings/manual/tolua_fix.h"
 #include "scripting/lua-bindings/manual/LuaBasicConversions.h"
+#include "scripting/lua-bindings/manual/CCLuaStack.h"
+#include "scripting/lua-bindings/manual/CCLuaValue.h"
+#include "scripting/lua-bindings/manual/CCLuaEngine.h"
+#include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
 
 int lua_cocos2dx_Ref_release(lua_State* tolua_S)
 {
@@ -32475,25 +32479,26 @@ int lua_cocos2dx_FileUtils_writeStringToFile(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     do{
         if (argc == 3) {
+            tolua_Error err;
             std::string arg0;
             ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:writeStringToFile");
-
             if (!ok) { break; }
+            
             std::string arg1;
             ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeStringToFile");
-
             if (!ok) { break; }
-            std::function<void (bool)> arg2;
-            do {
-			// Lambda binding for lua is not supported.
-			assert(false);
-		} while(0)
-		;
-
-            if (!ok) { break; }
-            cobj->writeStringToFile(arg0, arg1, arg2);
-            lua_settop(tolua_S, 1);
-            return 1;
+            
+            if (!toluafix_isfunction(tolua_S, 4, "LUA_FUNCTION", 0, &err)) break;
+            int arg2 = toluafix_ref_function(tolua_S, 4, 0);
+            ScriptHandlerMgr::HandlerType handlerType = ScriptHandlerMgr::getInstance()->addCustomHandler(cobj, arg2);
+            
+            cobj->writeStringToFile(arg0, arg1, [=](bool isSuccess) {
+                LuaStack *stack = LuaEngine::getInstance()->getLuaStack();
+                stack->pushBoolean(isSuccess);
+                stack->executeFunctionByHandler(arg2, 1);
+                ScriptHandlerMgr::getInstance()->removeObjectHandler((void*)cobj, handlerType);
+            });
+            return 0;
         }
     }while(0);
     ok  = true;
@@ -55631,19 +55636,12 @@ int lua_cocos2dx_Label_enableUnderline(lua_State* tolua_S)
 {
     int argc = 0;
     cocos2d::Label* cobj = nullptr;
-    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.Label",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::Label*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
@@ -55653,18 +55651,21 @@ int lua_cocos2dx_Label_enableUnderline(lua_State* tolua_S)
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Label_enableUnderline'", nullptr);
-            return 0;
-        }
+    if (argc == 0) {
         cobj->enableUnderline();
         lua_settop(tolua_S, 1);
         return 1;
+    } else if (argc == 1) {
+        cocos2d::Color4B arg0;
+        if (luaval_to_color4b(tolua_S, 2, &arg0, "cc.Label:enableUnderline")) {
+            cobj->enableUnderline(arg0);
+            lua_settop(tolua_S, 1);
+            return 1;
+        }
+        tolua_error(tolua_S, "invalid arguments in function 'lua_cocos2dx_Label_enableUnderline'", nullptr);
+        return 0;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Label:enableUnderline",argc, 0);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting 0~1 \n", "cc.Label:enableUnderline",argc);
     return 0;
 
 #if COCOS2D_DEBUG >= 1

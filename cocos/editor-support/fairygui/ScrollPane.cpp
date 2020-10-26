@@ -41,25 +41,26 @@ static inline float sp_EaseFunc(float t, float d)
 }
 
 ScrollPane::ScrollPane(GComponent* owner)
-    : _vtScrollBar(nullptr),
-      _hzScrollBar(nullptr),
-      _header(nullptr),
-      _footer(nullptr),
-      _pageController(nullptr),
-      _needRefresh(false),
-      _refreshBarAxis(0),
-      _aniFlag(0),
-      _loop(0),
-      _headerLockedSize(0),
-      _footerLockedSize(0),
-      _vScrollNone(false),
-      _hScrollNone(false),
-      _tweening(0),
-      _xPos(0),
-      _yPos(0),
-      _floating(false),
-      _mouseWheelEnabled(true),
-      _hover(false)
+: _vtScrollBar(nullptr),
+_hzScrollBar(nullptr),
+_header(nullptr),
+_footer(nullptr),
+_pageController(nullptr),
+_needRefresh(false),
+_refreshBarAxis(0),
+_aniFlag(0),
+_loop(0),
+_headerLockedSize(0),
+_footerLockedSize(0),
+_vScrollNone(false),
+_hScrollNone(false),
+_tweening(0),
+_xPos(0),
+_yPos(0),
+_floating(false),
+_dontClipMargin(false),
+_mouseWheelEnabled(true),
+_hover(false)
 {
     _owner = owner;
 
@@ -83,6 +84,10 @@ ScrollPane::ScrollPane(GComponent* owner)
     _owner->addEventListener(UIEventType::TouchBegin, CC_CALLBACK_1(ScrollPane::onTouchBegin, this));
     _owner->addEventListener(UIEventType::TouchMove, CC_CALLBACK_1(ScrollPane::onTouchMove, this));
     _owner->addEventListener(UIEventType::TouchEnd, CC_CALLBACK_1(ScrollPane::onTouchEnd, this));
+    _owner->addEventListener(UIEventType::Exit, [this](EventContext*) {
+        if (_draggingPane == this)
+            _draggingPane = nullptr;
+    });
 }
 
 ScrollPane::~ScrollPane()
@@ -98,6 +103,9 @@ ScrollPane::~ScrollPane()
         _header->release();
     if (_footer)
         _footer->release();
+
+    if (_draggingPane == this)
+        _draggingPane = nullptr;
 }
 
 void ScrollPane::setup(ByteBuffer* buffer)
@@ -134,6 +142,7 @@ void ScrollPane::setup(ByteBuffer* buffer)
     _inertiaDisabled = (flags & 256) != 0;
     _maskContainer->setClippingEnabled((flags & 512) == 0);
     _floating = (flags & 1024) != 0;
+    _dontClipMargin = (flags & 2048) != 0;
 
     if (scrollBarDisplay == ScrollBarDisplayType::DEFAULT)
     {
@@ -758,6 +767,13 @@ void ScrollPane::handleSizeChanged()
         maskRect.size.width += _vtScrollBar->getWidth();
     if (_hScrollNone && _hzScrollBar != nullptr)
         maskRect.size.height += _hzScrollBar->getHeight();
+    if (_dontClipMargin)
+    {
+        maskRect.origin.x -= _owner->_margin.left;
+        maskRect.size.width += _owner->_margin.left + _owner->_margin.right;
+        maskRect.origin.y -= _owner->_margin.top;
+        maskRect.size.height += _owner->_margin.top + _owner->_margin.bottom;
+    }
     _maskContainer->setClippingRegion(maskRect);
 
     if (_vtScrollBar)
@@ -843,7 +859,9 @@ GObject* ScrollPane::hitTest(const cocos2d::Vec2& pt, const cocos2d::Camera* cam
     if (_maskContainer->isClippingEnabled())
     {
         Vec2 localPoint = _maskContainer->convertToNodeSpace(pt);
-        if (_maskContainer->getClippingRegion().containsPoint(localPoint))
+        Rect rect; // fix by u0u0. rect.origin must 0,0
+        rect.size = _maskContainer->getClippingRegion().size;
+        if (rect.containsPoint(localPoint))
             return _owner;
         else
             return nullptr;
