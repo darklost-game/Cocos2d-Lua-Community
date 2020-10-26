@@ -2139,7 +2139,8 @@ static int tolua_cocos2dx_FileUtils_getDataFromFile(lua_State* tolua_S)
             auto data = FileUtils::getInstance()->getDataFromFile(arg0);
             if (!data.isNull())
                 lua_pushlstring(tolua_S, reinterpret_cast<const char*>(data.getBytes()), static_cast<size_t>(data.getSize()));
-
+            else
+                lua_pushnil(tolua_S);
             return 1;
         }
     }
@@ -4397,7 +4398,7 @@ static int lua_cocos2dx_Console_addCommand(lua_State* tolua_S)
         LUA_FUNCTION handler = 0;
         if (ok) {
             handler = (  toluafix_ref_function(tolua_S,3,0));
-            ScriptHandlerMgr::getInstance()->addCustomHandler((void*)cobj, handler);
+            ScriptHandlerMgr::HandlerType handlerType = ScriptHandlerMgr::getInstance()->addCustomHandler((void*)cobj, handler);
 
             Console::Command outValue = {
                 name,
@@ -4409,6 +4410,7 @@ static int lua_cocos2dx_Console_addCommand(lua_State* tolua_S)
                     tolua_pushstring(tolua_S, args.c_str());
 
                     LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 2);
+                    ScriptHandlerMgr::getInstance()->removeObjectHandler(cobj, handlerType);
                 }
             };
             cobj->addCommand(outValue);

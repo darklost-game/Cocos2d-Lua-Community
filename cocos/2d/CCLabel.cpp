@@ -1305,15 +1305,16 @@ void Label::enableBold()
     }
 }
 
-void Label::enableUnderline()
+void Label::enableUnderline(const Color4B& underlineColor)
 {
     // remove it, just in case to prevent adding two or more
     if (!_underlineNode)
     {
         _underlineNode = DrawNode::create();
         addChild(_underlineNode, 100000);
-        _contentDirty = true;
     }
+    _contentDirty = true;
+    _underlineColor4B = underlineColor;
 }
 
 void Label::enableStrikethrough()
@@ -1541,7 +1542,8 @@ void Label::updateContent()
 
                 // Github issue #15214. Uses _displayedColor instead of _textColor for the underline.
                 // This is to have the same behavior of SystemFonts.
-                _underlineNode->drawLine(Vec2(_linesOffsetX[i],y), Vec2(_linesWidth[i] + _linesOffsetX[i],y), Color4F(_displayedColor));
+                Color4F color = _underlineColor4B.a > 0 ? Color4F(_underlineColor4B) : Color4F(_displayedColor);
+                _underlineNode->drawLine(Vec2(_linesOffsetX[i],y), Vec2(_linesWidth[i] + _linesOffsetX[i],y), color);
             }
         }
         else if (_textSprite)
@@ -1555,7 +1557,8 @@ void Label::updateContent()
                 // FIXME: system fonts don't report the height of the font correctly. only the size of the texture, which is POT
                 y += spriteSize.height / 2;
             // FIXME: Might not work with different vertical alignments
-            _underlineNode->drawLine(Vec2(0.0f,y), Vec2(spriteSize.width,y), Color4F(_textSprite->getDisplayedColor()));
+            Color4F color = _underlineColor4B.a > 0 ? Color4F(_underlineColor4B) : Color4F(_textSprite->getDisplayedColor());
+            _underlineNode->drawLine(Vec2(0.0f,y), Vec2(spriteSize.width,y), color);
         }
     }
 
@@ -2292,10 +2295,10 @@ FontDefinition Label::_getFontDefinition() const
         systemFontDef._stroke._strokeEnabled = false;
     }
 
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_MAC) && (CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID) && (CC_TARGET_PLATFORM != CC_PLATFORM_IOS)
     if (systemFontDef._stroke._strokeEnabled)
     {
-        CCLOGERROR("Stroke Currently only supported on iOS and Android!");
+        CCLOGERROR("Stroke Currently only supported on Mac, iOS and Android!");
     }
     systemFontDef._stroke._strokeEnabled = false;
 #endif
