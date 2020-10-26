@@ -1,18 +1,18 @@
 /****************************************************************************
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
+
  http://www.cocos2d-x.org
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,10 +31,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.util.SparseArray;
+import android.util.TypedValue;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.webkit.WebSettings;
+import android.widget.LinearLayout;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -84,16 +87,44 @@ public class Cocos2dxWebViewHelper {
         onJsCallback(index, message);
     }
 
+    private static native void onBtnCallback(int index, String url);
+
+    public static void _onBtnCallback(int index, String url) {
+        onBtnCallback(index, url);
+    }
+
     public static int createWebView() {
         final int index = viewTag;
         sCocos2dxActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Cocos2dxWebView webView = new Cocos2dxWebView(sCocos2dxActivity, index);
+                final Cocos2dxWebView webView = new Cocos2dxWebView(sCocos2dxActivity, index);
                 FrameLayout.LayoutParams lParams = new FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.WRAP_CONTENT,
                         FrameLayout.LayoutParams.WRAP_CONTENT);
                 sLayout.addView(webView, lParams);
+
+
+                Button backButton = new Button(sCocos2dxActivity);//新增的按钮
+                backButton.setBackgroundResource(R.drawable.btn_back_home);//按钮资源路径
+                int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,57, sCocos2dxActivity.getResources().getDisplayMetrics());
+                backButton.setLayoutParams(new LinearLayout.LayoutParams(px, px));
+                backButton.setOnClickListener(new View.OnClickListener() {//按钮回调
+                    @Override
+                    public void onClick(View view) {
+                        Log.i("backButtononClick", "backButtononClick");
+                        final String url = webView.getUrl();
+                        sCocos2dxActivity.runOnGLThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Cocos2dxWebViewHelper._onBtnCallback(index,url);
+                            }
+                        });
+
+                    }
+                });
+
+                webView.addView(backButton);//按钮直接增加到webview上面
 
                 webViews.put(index, webView);
             }
@@ -109,6 +140,14 @@ public class Cocos2dxWebViewHelper {
                 if (webView != null) {
                     webViews.remove(index);
                     sLayout.removeView(webView);
+                    webView.removeAllViews();
+                    webView.clearHistory();
+//                    webView.clearCache(true);
+                    webView.loadUrl("about:blank"); // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
+                    webView.freeMemory();
+                    webView.pauseTimers();
+
+                    webView.destroy(); // Note that mWebView.destroy() and mWebView = null do the exact same thing
                 }
             }
         });

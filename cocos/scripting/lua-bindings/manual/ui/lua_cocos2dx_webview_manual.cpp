@@ -185,6 +185,59 @@ tolua_lerror:
     return 0;
 }
 
+
+
+static int lua_cocos2dx_WebView_setOnBtnCallback(lua_State* L)
+{
+    
+    int argc = 0;
+    cocos2d::ui::WebView* self = nullptr;
+    
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+    if (!tolua_isusertype(L,1,"ccui.WebView",0,&tolua_err)) goto tolua_lerror;
+#endif
+    
+    self = static_cast<cocos2d::ui::WebView*>(tolua_tousertype(L,1,0));
+    
+#if COCOS2D_DEBUG >= 1
+    if (nullptr == self) {
+        tolua_error(L,"invalid 'self' in function 'lua_cocos2dx_WebView_setOnBtnCallback'\n", nullptr);
+        return 0;
+    }
+#endif
+    
+    argc = lua_gettop(L) - 1;
+    
+    if (argc == 1)
+    {
+#if COCOS2D_DEBUG >= 1
+        if (!toluafix_isfunction(L,2,"LUA_FUNCTION",0,&tolua_err))
+        {
+            goto tolua_lerror;
+        }
+#endif
+        
+        LUA_FUNCTION handler = (  toluafix_ref_function(L,2,0));
+        std::function<void(ui::WebView *sender, const std::string &url)> callback = [L,handler](ui::WebView *sender, const std::string &url){
+            toluafix_pushusertype_ccobject(L, sender->_ID, &(sender->_luaID), (void*)sender,"ccui.WebView");
+            tolua_pushcppstring(L, url);
+            LuaEngine::getInstance()->getLuaStack()->executeFunctionByHandler(handler, 2);
+        };
+        
+        ScriptHandlerMgr::getInstance()->addCustomHandler((void*)self, handler);
+        self->setOnBtnCallback(callback);
+        return 0;
+    }
+    luaL_error(L, "%s has wrong number of arguments: %d, was expecting %d\n ", "ccui.WebView:setOnDidFailLoading",argc, 1);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+tolua_lerror:
+    tolua_error(L, "#ferror in function 'lua_cocos2dx_WebView_setOnBtnCallback'.", &tolua_err);
+#endif
+    return 0;
+}
+
 static void extendWebView(lua_State* L)
 {
     lua_pushstring(L, "ccui.WebView");
@@ -194,6 +247,7 @@ static void extendWebView(lua_State* L)
         tolua_function(L, "setOnShouldStartLoading", lua_cocos2dx_WebView_setOnShouldStartLoading);
         tolua_function(L, "setOnDidFinishLoading", lua_cocos2dx_WebView_setOnDidFinishLoading);
         tolua_function(L, "setOnDidFailLoading", lua_cocos2dx_WebView_setOnDidFailLoading);
+        tolua_function(L, "setOnBtnCallback", lua_cocos2dx_WebView_setOnBtnCallback);
     }
     lua_pop(L, 1);
 }

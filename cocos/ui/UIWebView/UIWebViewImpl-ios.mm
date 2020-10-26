@@ -39,7 +39,7 @@
 @property (nonatomic) std::function<void(std::string url)> didFinishLoading;
 @property (nonatomic) std::function<void(std::string url)> didFailLoading;
 @property (nonatomic) std::function<void(std::string url)> onJsCallback;
-
+@property (nonatomic) std::function<void(std::string url)> onBtnCallback;
 @property(nonatomic, readonly, getter=canGoBack) BOOL canGoBack;
 @property(nonatomic, readonly, getter=canGoForward) BOOL canGoForward;
 
@@ -83,6 +83,7 @@
 
 @interface UIWebViewWrapper () <WKUIDelegate, WKNavigationDelegate>
 @property(nonatomic) WKWebView *wkWebView;
+@property(nonatomic, retain) UIButton *backButton; //增加按钮申明
 
 @property(nonatomic, copy) NSString *jsScheme;
 @end
@@ -99,6 +100,7 @@
     self = [super init];
     if (self) {
         self.wkWebView = nil;
+        self.backButton = nil;//初始化
         self.shouldStartLoading = nullptr;
         self.didFinishLoading = nullptr;
         self.didFailLoading = nullptr;
@@ -112,10 +114,23 @@
     [self.wkWebView removeFromSuperview];
     [self.wkWebView release];
     self.wkWebView = nil;
+    
+    if (self.backButton) {
+        [self.backButton removeFromSuperview];//析构
+        self.backButton = nil;
+    }
+    
     self.jsScheme = nil;
     [super dealloc];
 }
+-(IBAction)onClickBackButton:(UIButton *) button{
+   
+    if (self.onBtnCallback) {
+        NSString *url = [self.wkWebView.URL absoluteString];
+        self.onBtnCallback([url UTF8String]);
+    }
 
+}
 - (void)setupWebView {
     if (!self.wkWebView) {
         self.wkWebView = [[WKWebView alloc] init];
@@ -127,6 +142,19 @@
         auto eaglview = (CCEAGLView *) view->getEAGLView();
         [eaglview addSubview:self.wkWebView];
     }
+    if (!self.backButton) {//ios按钮创建
+     
+            self.backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+            [self.backButton setFrame:CGRectMake(5, 10, 57, 57)];
+            [self.backButton setImage:[UIImage imageNamed:@"btn_back_home.png"] forState:UIControlStateNormal];
+            self.backButton.showsTouchWhenHighlighted = NO;
+            [self.backButton addTarget:self action:@selector(onClickBackButton:)forControlEvents:UIControlEventTouchUpInside];//自定义按钮回调
+    }
+    if (!self.backButton.superview) { //添加
+            [self.wkWebView addSubview:self.backButton];
+    }
+
+
 }
 
 - (void)setVisible:(bool)visible {
@@ -326,6 +354,11 @@ WebViewImpl::WebViewImpl(WebView *webView)
     _uiWebViewWrapper.onJsCallback = [this](std::string url) {
         if (this->_webView->_onJSCallback) {
             this->_webView->_onJSCallback(this->_webView, url);
+        }
+    };
+    _uiWebViewWrapper.onBtnCallback = [this](std::string url) {
+        if (this->_webView->_onBtnCallback) {
+            this->_webView->_onBtnCallback(this->_webView, url);
         }
     };
 }

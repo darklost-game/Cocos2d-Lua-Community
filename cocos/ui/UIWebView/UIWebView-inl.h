@@ -191,6 +191,7 @@ namespace ui{
             this->_onDidFinishLoading = webView->_onDidFinishLoading;
             this->_onDidFailLoading = webView->_onDidFailLoading;
             this->_onJSCallback = webView->_onJSCallback;
+            this->_onBtnCallback = webView->_onBtnCallback;
         }
     }
 
@@ -213,6 +214,11 @@ namespace ui{
     {
         _onJSCallback = callback;
     }
+    void WebView::setOnBtnCallback(const ccWebViewCallback &callback)
+    {
+        _onBtnCallback = callback;
+    }
+
 
     std::function<bool(WebView *sender, const std::string &url)> WebView::getOnShouldStartLoading()const
     {
@@ -232,6 +238,11 @@ namespace ui{
     WebView::ccWebViewCallback WebView::getOnJSCallback()const
     {
         return _onJSCallback;
+    }
+
+    WebView::ccWebViewCallback WebView::getOnBtnCallback()const
+    {
+        return _onBtnCallback;
     }
 
 } // namespace ui

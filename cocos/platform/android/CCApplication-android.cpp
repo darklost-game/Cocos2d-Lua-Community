@@ -27,6 +27,7 @@ THE SOFTWARE.
 #include "platform/CCApplication.h"
 #include "base/CCDirector.h"
 #include "base/ccUtils.h"
+#include "base/CCEventDispatcher.h"
 #include <android/log.h>
 #include <jni.h>
 #include <cstring>
@@ -124,7 +125,9 @@ bool Application::openURL(const std::string &url)
 }
 
 void Application::applicationScreenSizeChanged(int newWidth, int newHeight) {
-
+    auto glview = cocos2d::Director::getInstance()->getOpenGLView();
+    glview->setFrameSize(newWidth,  newHeight);
+    Director::getInstance()->getEventDispatcher()->dispatchCustomEvent("APP_SCREEN_SIZE_CHANGE");
 }
 
 NS_CC_END

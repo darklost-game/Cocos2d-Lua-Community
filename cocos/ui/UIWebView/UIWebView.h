@@ -177,6 +177,8 @@ public:
      */
     void setOnJSCallback(const ccWebViewCallback& callback);
     
+    void setOnBtnCallback(const ccWebViewCallback& callback);
+    
     /**
      * Get the callback when WebView is about to start.
      */
@@ -196,7 +198,8 @@ public:
      *Get the Javascript callback.
      */
     ccWebViewCallback getOnJSCallback()const;
-
+    
+    ccWebViewCallback getOnBtnCallback()const;
     /**
      * Set whether the webview bounces at end of scroll of WebView.
      */
@@ -233,6 +236,7 @@ protected:
     ccWebViewCallback _onDidFinishLoading = nullptr;
     ccWebViewCallback _onDidFailLoading = nullptr;
     ccWebViewCallback _onJSCallback = nullptr;
+    ccWebViewCallback _onBtnCallback = nullptr;
 
 CC_CONSTRUCTOR_ACCESS:
     /**

@@ -1,19 +1,19 @@
 /****************************************************************************
  Copyright (c) 2014-2016 Chukong Technologies Inc.
  Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
+
  http://www.cocos2d-x.org
- 
+
  Permission is hereby granted, free of charge, to any person obtaining a copy
  of this software and associated documentation files (the "Software"), to deal
  in the Software without restriction, including without limitation the rights
  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  copies of the Software, and to permit persons to whom the Software is
  furnished to do so, subject to the following conditions:
- 
+
  The above copyright notice and this permission notice shall be included in
  all copies or substantial portions of the Software.
- 
+
  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -64,11 +64,11 @@ static std::string getFixedBaseUrl(const std::string& baseUrl)
     else {
         fixedBaseUrl = s_sdRootBaseUrl + baseUrl;
     }
-    
+
     if (fixedBaseUrl.c_str()[fixedBaseUrl.length() - 1] != '/') {
         fixedBaseUrl += "/";
     }
-    
+
     return fixedBaseUrl;
 }
 
@@ -123,6 +123,21 @@ extern "C" {
         env->ReleaseStringUTFChars(jmessage, charMessage);
         cocos2d::ui::WebViewImpl::onJsCallback(index, message);
     }
+
+    /*
+    * Class:     org_cocos2dx_lib_Cocos2dxWebViewHelper
+    * Method:    onBtnCallback
+    * Signature: (ILjava/lang/String;)V
+    */
+    JNIEXPORT void JNICALL Java_org_cocos2dx_lib_Cocos2dxWebViewHelper_onBtnCallback(JNIEnv *env, jclass, jint index, jstring jurl) {
+        // LOGD("jsCallback");
+        auto charUrl = env->GetStringUTFChars(jurl, NULL);
+        std::string url = charUrl;
+        env->ReleaseStringUTFChars(jurl, charUrl);
+        cocos2d::ui::WebViewImpl::onBtnCallback(index, url);
+    }
+
+
 }
 
 namespace {
@@ -156,7 +171,7 @@ std::string getUrlStringByFileName(const std::string &fileName) {
     else {
         urlString.append(basePath).append(fullPath);
     }
-    
+
     return urlString;
 }
 } // namespace
@@ -276,10 +291,20 @@ namespace ui{
         }
     }
 
+    void WebViewImpl::onBtnCallback(const int viewTag, const std::string &url){
+        auto it = s_WebViewImpls.find(viewTag);
+        if (it != s_WebViewImpls.end()) {
+            auto webView = it->second->_webView;
+            if (webView->_onBtnCallback) {
+                webView->_onBtnCallback(webView, url);
+            }
+        }
+    }
+
     void WebViewImpl::draw(cocos2d::Renderer *renderer, cocos2d::Mat4 const &transform, uint32_t flags) {
         if (flags & cocos2d::Node::FLAGS_TRANSFORM_DIRTY) {
             auto uiRect = cocos2d::ui::Helper::convertBoundingBoxToScreen(_webView);
-            JniHelper::callStaticVoidMethod(className, "setWebViewRect", _viewTag, 
+            JniHelper::callStaticVoidMethod(className, "setWebViewRect", _viewTag,
                                             (int)uiRect.origin.x, (int)uiRect.origin.y,
                                             (int)uiRect.size.width, (int)uiRect.size.height);
         }
@@ -288,16 +313,16 @@ namespace ui{
     void WebViewImpl::setVisible(bool visible) {
         JniHelper::callStaticVoidMethod(className, "setVisible", _viewTag, visible);
     }
-    
+
     void WebViewImpl::setOpacityWebView(const float opacity){
         JniHelper::callStaticVoidMethod(className, "setOpacityWebView", _viewTag, opacity);
     };
-    
-    
+
+
     float WebViewImpl::getOpacityWebView()const{
         return JniHelper::callStaticFloatMethod(className, "getOpacityWebView", _viewTag);
     };
-    
+
     void WebViewImpl::setBackgroundTransparent(){
         JniHelper::callStaticVoidMethod(className, "setBackgroundTransparent", _viewTag);
     };
