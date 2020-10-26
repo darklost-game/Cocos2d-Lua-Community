@@ -97,6 +97,7 @@ elseif(APPLE)
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreen.storyboard
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/LaunchScreenBackground.png
             ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/Images.xcassets
+            ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/btn_back_home.png
             )
         list(APPEND GAME_SOURCE
              ${RUNTIME_SRC_ROOT}/proj.ios_mac/ios/main.m
