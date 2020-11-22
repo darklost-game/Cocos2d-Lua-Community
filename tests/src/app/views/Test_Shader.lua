@@ -151,8 +151,15 @@ local Circle_fsh = [[
 		float cicle = radius;
 		float rx = center.x*wh_ratio;
 		float ry = center.y;
-		//计算点与中心店距离
-		float dis = length(v_texCoord - vec2(rx,ry));
+
+		//计算点与中心店距离 wh_ratio
+		float distance_x =  v_texCoord.x * wh_ratio - rx;
+		float distance_y =  v_texCoord.y  - ry;
+
+		float dis = sqrt(pow(distance_x, 2) + pow(distance_y, 2));
+
+		//float dis = length(v_texCoord - vec2(rx,ry)); 
+
 		//圈外
 		if( dis > cicle){
 			//discard;
@@ -161,7 +168,6 @@ local Circle_fsh = [[
 		}else if( dis > (cicle - blur) ){
 
 			float alpha = smoothstep(cicle, cicle - blur, dis);
-			//gl_FragColor = vec4(color.rgb, alpha); 
 			gl_FragColor = vec4(color.rgb, alpha); 
 
 		//圈内
@@ -401,14 +407,16 @@ end
 function TestCase:ctor()
 	self.super.ctor(self)
 
-	local sp = display.newSprite("avatar01.jpg")
+	local sp = display.newSprite("chip4.png")
 	local sp_size = sp:getContentSize()
 	sp:pos(sp_size.width/2,sp_size.height/2):addTo(self)
+	
 
-	display.makeCircleSquare(sp,false,0.1)
+	display.makeCircleSquare(sp,false,0.25)
 
 	local sp1 = display.newSprite("avatar01.jpg")
 	sp1:pos( display.width -sp_size.width/2,sp_size.height/2):addTo(self)
+	-- sp1:center()
 	display.makeBlur(sp1)
 
 
@@ -426,7 +434,7 @@ function TestCase:ctor()
 	display.makeOutline(sp3)
 
 
-	local sp4 = display.newSprite("avatar01.jpg")
+	local sp4 = display.newSprite("chip4.png")
 	local size = sp:getContentSize()
 	sp4:center():addTo(self)
 
