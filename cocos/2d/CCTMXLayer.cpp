@@ -429,8 +429,7 @@ Sprite *TMXLayer::createTileSprite(intptr_t z, uint32_t gid)
 	Texture2D *texture = Director::getInstance()->getTextureCache()->getTextureForKey(tilesetImage->sourceImage);
 	Rect rect = tileset->getRectForGID(gid);
     rect = CC_RECT_PIXELS_TO_POINTS(rect);
-    // only apply fixArtifacts on TMXOrientationOrtho
-	Sprite *tile = Sprite::createWithTexture(texture, rect, false, _layerOrientation == TMXOrientationOrtho);
+    Sprite *tile = Sprite::createWithTexture(texture, rect, false, true);
     tile->setCameraMask(getCameraMask());
     _tileSprites.insert(std::pair<intptr_t, Sprite *>(z, tile));
     addChild(tile);
@@ -550,7 +549,8 @@ void TMXLayer::tilesUpdate(float dt)
         uint32_t gid = data->gids[data->frameIndex];
         data->leftTime = data->durations[data->frameIndex];
         setTileTexture(data->tile, gid);
-        setupTileSprite(data->tile, data->pos, gid);
+        // no need change sprite's other properties
+        //setupTileSprite(data->tile, data->pos, gid);
     }
 }
 
