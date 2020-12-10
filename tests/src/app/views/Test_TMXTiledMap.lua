@@ -1,6 +1,6 @@
 local BaseLayer = require("app.scenes.BaseLayer")
 
-local TestCase = class("Test_RichText", BaseLayer)
+local TestCase = class("Test_TMXTiledMap", BaseLayer)
 
 function TestCase:ctor()
 	self.super.ctor(self)
