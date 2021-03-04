@@ -4,13 +4,12 @@ end)
 
 function MainScene:ctor()
 	local tests = {
-		"Test_NodeFrameEvent",
-		"Test_NodeEvent",
-		"Test_KeypadEvent",
-		"Test_NodeTouchEvent",
+		"Test_3D",
 		"Test_AccelerometerEvent",
-		"Test_CocosStudio",
+		"Test_AsyncTCP",
 		"Test_Audio",
+		"Test_ClippingRectangleNode",
+		"Test_CocosStudio",
 		"Test_FairyGUI",
 		"Test_FairyGUIProgress",
 		"Test_Network",
@@ -19,11 +18,13 @@ function MainScene:ctor()
 		"Test_Sproto",
 		"Test_ClientCrypt",
 		"Test_Spine",
+		"Test_KeypadEvent",
+		"Test_NodeEvent",
+		"Test_NodeFrameEvent",
+		"Test_NodeTouchEvent",
 		"Test_RichText",
 		"Test_TMXTiledMap",
 		"Test_QRCode",
-		"Test_AsyncTCP",
-		"Test_3D",
 		"Test_Shader",
 	}
 
