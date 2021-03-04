@@ -698,7 +698,7 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
                         lua_setfield(L, -3, filename.c_str() + offset);
                         // clear loaded, make the next require run the new module.
                         lua_pushnil(L);
-                        lua_setfield(L, -2, filename.c_str() + offset);
+                        lua_setfield(L, -2, filename.c_str());
                         ++count;
                     }
                     free(zbuffer);
